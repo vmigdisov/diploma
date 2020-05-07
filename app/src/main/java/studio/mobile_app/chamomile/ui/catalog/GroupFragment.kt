@@ -34,8 +34,8 @@ class GroupFragment : Fragment(), CategoryClickListener, ProductClickListener {
         }
         var positionView: TextView = root.findViewById(R.id.positionView)
         positionView.text = "Position: ${arguments?.getInt(ARG_SECTION_NUMBER) ?: -1} "
-        //var fragment: Fragment = root.findViewById(R.id.catalogContainer)
-        //fragment.arguments?.putInt("section_number", 15)
+        // Ожидаю, что при загрузке в контейнер catalogContainer загрузится фрагмент с перечнем категорий для группы, переданной в параметрах (productGroup)
+        // Т.е. нажимаешь на Мужчины - грузится список категорий для мужчин (3 шт.), Женщины - для женщин (6 шт.), Дети - для детей (3 шт.)
         fragmentManager?.let {
             it
                 .beginTransaction()
@@ -44,6 +44,7 @@ class GroupFragment : Fragment(), CategoryClickListener, ProductClickListener {
                 .addToBackStack("CATALOG")
                 .commit()
         }
+        // по факту в контрейнер грузится другой фрагмент - соседний.
         return root
     }
 
