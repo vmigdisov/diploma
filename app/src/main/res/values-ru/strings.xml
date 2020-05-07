@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ромашка</string>
+    <string name="title_home">Главная</string>
+    <string name="title_catalog">Каталог</string>
+    <string name="title_basket">Корзина</string>
+    <string name="title_favourites">Избранное</string>
+    <string name="title_profile">Профиль</string>
+    <string name="hello_blank_fragment">Пустой фрагмент</string>
+    <string name="search_placeholder_text">Наименование, бренд или артикул</string>
+</resources>
