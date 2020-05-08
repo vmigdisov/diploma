@@ -16,10 +16,22 @@ import studio.mobile_app.chamomile.ProductCategory
 import studio.mobile_app.chamomile.ProductGroup
 import studio.mobile_app.chamomile.R
 
-class CategoriesFragment(group: ProductGroup = ProductGroup(-1, ""), listner: CategoryClickListener? = null) : Fragment() {
+class CategoriesFragment() : Fragment() {
 
-    var productGroup = group
-    var categoryClickListener = listner
+    var categoryClickListener: CategoryClickListener? = null
+
+    companion object {
+        private const val ARG_POSITION = "POSITION"
+        @JvmStatic
+        fun newInstance(position: Int, listner: CategoryClickListener?): CategoriesFragment {
+            return CategoriesFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_POSITION, position)
+                    categoryClickListener = listner
+                }
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_categories, container, false)
@@ -27,7 +39,9 @@ class CategoriesFragment(group: ProductGroup = ProductGroup(-1, ""), listner: Ca
         recyclerView.layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
         var categories: ArrayList<ProductCategory>
         activity?.let {
-            categories = (ViewModelProviders.of(it).get(MainViewModel::class.java)).productCategories.filter { it.productGroup == productGroup.id } as ArrayList<ProductCategory>
+            var mainViewModel = ViewModelProviders.of(it).get(MainViewModel::class.java)
+            var productGroup = mainViewModel.productGroups[arguments?.getInt(ARG_POSITION) ?: -1]
+            categories = mainViewModel.productCategories.filter { it.productGroup == productGroup.id } as ArrayList<ProductCategory>
             recyclerView.adapter = CategoriesAdapter(categories, it, categoryClickListener)
         }
         return root
@@ -44,9 +58,7 @@ class CategoriesFragment(group: ProductGroup = ProductGroup(-1, ""), listner: Ca
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             holder.categoryCaption.setText(categories[position].name)
             holder.itemView.setOnClickListener {
-                holder.itemView.setBackgroundColor(Color.YELLOW);
                 clickListner?.onListItemClicked(categories[position])
-
             }
         }
 

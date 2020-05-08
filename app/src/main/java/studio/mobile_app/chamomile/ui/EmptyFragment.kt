@@ -1,4 +1,4 @@
-package studio.mobile_app.chamomile.ui.catalog
+package studio.mobile_app.chamomile.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
