@@ -1,7 +1,6 @@
 package studio.mobile_app.chamomile.ui.catalog
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,22 +12,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import studio.mobile_app.chamomile.MainViewModel
 import studio.mobile_app.chamomile.ProductCategory
-import studio.mobile_app.chamomile.ProductGroup
 import studio.mobile_app.chamomile.R
 
 class CategoriesFragment() : Fragment() {
 
-    var categoryClickListener: CategoryClickListener? = null
-
     companion object {
         private const val ARG_POSITION = "POSITION"
         @JvmStatic
-        fun newInstance(position: Int, listner: CategoryClickListener?): CategoriesFragment {
+        fun newInstance(position: Int): CategoriesFragment {
             return CategoriesFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_POSITION, position)
-                    categoryClickListener = listner
-                }
+                arguments = Bundle().apply { putInt(ARG_POSITION, position) }
             }
         }
     }
@@ -42,7 +35,7 @@ class CategoriesFragment() : Fragment() {
             var mainViewModel = ViewModelProviders.of(it).get(MainViewModel::class.java)
             var productGroup = mainViewModel.productGroups[arguments?.getInt(ARG_POSITION) ?: -1]
             categories = mainViewModel.productCategories.filter { it.productGroup == productGroup.id } as ArrayList<ProductCategory>
-            recyclerView.adapter = CategoriesAdapter(categories, it, categoryClickListener)
+            recyclerView.adapter = CategoriesAdapter(categories, it, parentFragment as? CategoryClickListener)
         }
         return root
     }
@@ -57,9 +50,7 @@ class CategoriesFragment() : Fragment() {
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             holder.categoryCaption.setText(categories[position].name)
-            holder.itemView.setOnClickListener {
-                clickListner?.onListItemClicked(categories[position])
-            }
+            holder.itemView.setOnClickListener { clickListner?.onListItemClicked(categories[position].id) }
         }
 
         override fun getItemViewType(position: Int): Int {

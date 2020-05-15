@@ -10,7 +10,7 @@ import studio.mobile_app.chamomile.ui.ProductsFragment
 
 
 interface CategoryClickListener {
-    fun onListItemClicked(categoty: ProductCategory)
+    fun onListItemClicked(categoty: Int)
 }
 
 interface ProductClickListener {
@@ -27,13 +27,13 @@ class GroupFragment : Fragment(), CategoryClickListener, ProductClickListener {
         val root = inflater.inflate(R.layout.fragment_container, container, false)
         childFragmentManager
                 .beginTransaction()
-                .replace(R.id.fragmentContainer, CategoriesFragment.newInstance((arguments?.getInt(ARG_POSITION) ?: 0), this))
+                .replace(R.id.fragmentContainer, CategoriesFragment.newInstance(arguments?.getInt(ARG_POSITION) ?: 0))
                 .addToBackStack("CATALOG")
                 .commit()
         return root
     }
 
-    override fun onListItemClicked(categoty: ProductCategory) {
+    override fun onListItemClicked(categoty: Int) {
 //        fragmentManager?.let { it
 //                .beginTransaction()
 //                .replace(R.id.fragmentContainer, ProductsFragment(categoty, this))
@@ -42,7 +42,7 @@ class GroupFragment : Fragment(), CategoryClickListener, ProductClickListener {
 //        }
         childFragmentManager
             .beginTransaction()
-            .replace(R.id.fragmentContainer, ProductsFragment(categoty, this))
+            .replace(R.id.fragmentContainer, ProductsFragment.newInstance(categoty))
             .addToBackStack("CATALOG")
             .commit()
     }
@@ -56,9 +56,7 @@ class GroupFragment : Fragment(), CategoryClickListener, ProductClickListener {
         @JvmStatic
         fun newInstance(position: Int): GroupFragment {
             return GroupFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_POSITION, position)
-                }
+                arguments = Bundle().apply { putInt(ARG_POSITION, position) }
             }
         }
     }

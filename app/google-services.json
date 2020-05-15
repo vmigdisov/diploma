@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "28743453622",
+    "firebase_url": "https://chamomile-3ab11.firebaseio.com",
+    "project_id": "chamomile-3ab11",
+    "storage_bucket": "chamomile-3ab11.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28743453622:android:2eb8a9ac91cdee11010f17",
+        "android_client_info": {
+          "package_name": "studio.mobile_app.chamomile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28743453622-q9mlntqa5l9nh71d5b1dtqhh065h21br.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8JKZQynkZIPDbSYI2OqEC9bEoFP7m79k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28743453622-q9mlntqa5l9nh71d5b1dtqhh065h21br.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
