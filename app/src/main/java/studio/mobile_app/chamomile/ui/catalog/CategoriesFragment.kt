@@ -1,18 +1,22 @@
 package studio.mobile_app.chamomile.ui.catalog
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.DimenRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import studio.mobile_app.chamomile.MainViewModel
 import studio.mobile_app.chamomile.ProductCategory
 import studio.mobile_app.chamomile.R
+
 
 class CategoriesFragment() : Fragment() {
 
@@ -29,7 +33,9 @@ class CategoriesFragment() : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_categories, container, false)
         var recyclerView: RecyclerView = root.findViewById(R.id.categoriesRecycleView)
-        recyclerView.layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
+        //recyclerView.layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
+        recyclerView.layoutManager = GridLayoutManager(activity,3)
+        recyclerView.addItemDecoration(ItemOffsetDecoration(context!!, R.dimen.item_offset))
         var categories: ArrayList<ProductCategory>
         activity?.let {
             var mainViewModel = ViewModelProviders.of(it).get(MainViewModel::class.java)
@@ -40,9 +46,7 @@ class CategoriesFragment() : Fragment() {
         return root
     }
 
-    internal class CategoriesAdapter(data: ArrayList<ProductCategory>, val context: Context, listner: CategoryClickListener?) : RecyclerView.Adapter<CategoriesAdapter.MyViewHolder>() {
-        var categories: ArrayList<ProductCategory> = data
-        var clickListner: CategoryClickListener? = listner
+    internal class CategoriesAdapter(val categories: ArrayList<ProductCategory>, val context: Context, val clickListner: CategoryClickListener?) : RecyclerView.Adapter<CategoriesAdapter.MyViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val itemView: View = LayoutInflater.from(context).inflate(R.layout.category_cell, parent, false)
             return MyViewHolder(itemView)
@@ -50,7 +54,7 @@ class CategoriesFragment() : Fragment() {
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             holder.categoryCaption.setText(categories[position].name)
-            holder.itemView.setOnClickListener { clickListner?.onListItemClicked(categories[position].id) }
+            holder.itemView.setOnClickListener { clickListner?.onCategoryClicked(categories[position].id) }
         }
 
         override fun getItemViewType(position: Int): Int {
@@ -67,6 +71,17 @@ class CategoriesFragment() : Fragment() {
             init {
                 categoryCaption = itemView.findViewById(R.id.categoryCaption)
             }
+        }
+
+    }
+
+    class ItemOffsetDecoration(private val mItemOffset: Int) : ItemDecoration() {
+
+        constructor(context: Context, @DimenRes itemOffsetId: Int) : this(context.resources.getDimensionPixelSize(itemOffsetId)) {}
+
+        override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+            super.getItemOffsets(outRect, view, parent, state)
+            outRect[mItemOffset, mItemOffset, mItemOffset] = mItemOffset
         }
 
     }

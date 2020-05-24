@@ -1,19 +1,23 @@
-package studio.mobile_app.chamomile.ui
+package studio.mobile_app.chamomile.ui.products
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import studio.mobile_app.chamomile.DBManager
 import studio.mobile_app.chamomile.Product
 import studio.mobile_app.chamomile.R
-import studio.mobile_app.chamomile.ui.catalog.ProductClickListener
+
+interface ProductClickListener {
+    fun onProductClicked(product: String)
+}
 
 class ProductsFragment() : Fragment() {
 
@@ -31,40 +35,34 @@ class ProductsFragment() : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
-//    @Override
-//    fun onBackPressed() {
-//        Log.d("WWW","MESSS")
-//        childFragmentManager.popBackStackImmediate()
-//    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_products, container, false)
         var recyclerView: RecyclerView = root.findViewById(R.id.productsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
         var products: ArrayList<Product>
-        context?.let {
+        activity?.let {
             products = DBManager(it).getProducts(arguments?.getInt(ARG_CATEGORY) ?: -1)
             recyclerView.adapter = ProductsAdapter(products, it, parentFragment as? ProductClickListener)
         }
         return root
     }
 
-    internal class ProductsAdapter(data: ArrayList<Product>, val context: Context, listner: ProductClickListener?) : RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
-        var products: ArrayList<Product> = data
-        var clickListner: ProductClickListener? = listner
+    internal class ProductsAdapter(val products: ArrayList<Product>, val context: Context, val clickListner: ProductClickListener?) : RecyclerView.Adapter<ProductsAdapter.MyViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-            val itemView: View =
-                LayoutInflater.from(context).inflate(R.layout.product_cell, parent, false)
+            val itemView: View = LayoutInflater.from(context).inflate(R.layout.product_cell, parent, false)
             return MyViewHolder(itemView)
         }
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             holder.productNameTextView.setText(products[position].name)
-            holder.productRemoteIdTextView.setText(products[position].remoteID)
             holder.productPriceTextView.setText(products[position].price.toString())
+            if (products[position].icon.size > 0) {
+                val bMap = BitmapFactory.decodeByteArray(products[position].icon, 0, products[position].icon.size)
+                holder.productIcon.setImageBitmap(bMap)
+            }
             holder.itemView.setOnClickListener {
-                clickListner?.onListItemClicked(products[position])
+                clickListner?.onProductClicked(products[position].id)
             }
         }
 
@@ -80,11 +78,11 @@ class ProductsFragment() : Fragment() {
             RecyclerView.ViewHolder(itemView) {
             var productNameTextView: TextView
             var productPriceTextView: TextView
-            var productRemoteIdTextView: TextView
+            var productIcon: ImageView
             init {
                 productNameTextView = itemView.findViewById(R.id.productNameTextView)
                 productPriceTextView = itemView.findViewById(R.id.productPriceTextView)
-                productRemoteIdTextView = itemView.findViewById(R.id.productRemoteIdTextView)
+                productIcon = itemView.findViewById(R.id.productIconView)
             }
         }
     }

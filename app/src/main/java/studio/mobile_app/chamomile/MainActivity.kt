@@ -2,24 +2,34 @@ package studio.mobile_app.chamomile
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-
-import java.util.HashMap
+import com.google.firebase.storage.ktx.storage
+import studio.mobile_app.chamomile.ui.catalog.ProductGroupsPagerAdapter
 
 class MainActivity : AppCompatActivity() {
+
+    override fun onBackPressed() {
+        supportFragmentManager.let { fm ->
+            for (fragment in fm.fragments) {
+                for (fr in fragment.childFragmentManager.fragments) {
+                    if (fr.isVisible && !fr.childFragmentManager.fragments.isEmpty()) {
+                        fr.childFragmentManager.popBackStack()
+                        return
+                    }
+                }
+            }
+        }
+        super.onBackPressed()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.productGroups = dbHandler.getProductGroups()
         mainViewModel.productCategories = dbHandler.getProductCategories()
         val fdb = Firebase.database.reference
+        val storageRef = Firebase.storage.reference
 //        val childUpdates = HashMap<String, Any>()
 //        dbHandler.getProducts(14).forEach() { product ->
 //            fdb.child("products").push().key.let {
@@ -44,38 +55,81 @@ class MainActivity : AppCompatActivity() {
 //                childUpdates["/products/$it"] = product.toMap()
 //            }
 //        }
+//        for (i in 11..14) {
+//            dbHandler.getProducts(i).forEach() { product ->
+//                childUpdates["/products/${product.id}"] = product.toMap()
+//            }
+//        }
 //        fdb.updateChildren(childUpdates)
 
-        val childEventListener = object: ChildEventListener {
-            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("FDB", "onChildAdded:" + dataSnapshot.key!!)
-                //val comment = dataSnapshot.getValue<Product>()
-            }
+        val productsEventListener = object: ChildEventListener {
 
-            override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("FDB", "onChildChanged: ${dataSnapshot.key}")
+            fun updateProduct(dataSnapshot: DataSnapshot) {
                 dataSnapshot.getValue(Product::class.java).let {
-                    dbHandler.saveProduct(it!!)
+                    if (it != null && dataSnapshot.key != null) {
+                        val product = it
+                        product.id = dataSnapshot.key!!
+                        dbHandler.saveProduct(product)
+                        storageRef.child("products/icon${dataSnapshot.key}.png").getBytes(Long.MAX_VALUE).addOnSuccessListener { iconByteArray ->
+                            product.icon = iconByteArray
+                            dbHandler.saveProduct(product)
+                            storageRef.child("products/image${dataSnapshot.key}.png").getBytes(Long.MAX_VALUE).addOnSuccessListener { imageByteArray ->
+                                product.image = imageByteArray
+                                dbHandler.saveProduct(product)
+                            }.addOnFailureListener { imageError -> Log.d("Fetch image error", imageError.localizedMessage ?: "") }
+                        }.addOnFailureListener { iconError -> Log.d("Fetch icon error", iconError.localizedMessage ?: "") }
+                    }
                 }
             }
 
-            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-                Log.d("FDB", "onChildRemoved:" + dataSnapshot.key!!)
-                val commentKey = dataSnapshot.key
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-                Log.w("FDB", "Products:onCancelled", p0.toException())
-                Toast.makeText(applicationContext, "Failed to load products.", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                Log.d("FDB", "onChildMoved:" + dataSnapshot.key!!)
-                //val movedComment = dataSnapshot.getValue<Comment>()
-                //val commentKey = dataSnapshot.key
-
-            }
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) { updateProduct(dataSnapshot) }
+            override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?)  { updateProduct(dataSnapshot) }
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
+            override fun onCancelled(p0: DatabaseError) {}
+            override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {}
         }
-        fdb.child("products").addChildEventListener(childEventListener)
+
+        val productCategoriesEventListener = object: ChildEventListener {
+
+            fun updateProductCategory(dataSnapshot: DataSnapshot) {
+                dataSnapshot.getValue(ProductCategory::class.java).let {
+                    if (it != null && dataSnapshot.key != null) {
+                        val productCategory = it
+                        productCategory.id = dataSnapshot.key!!.toInt()
+                        dbHandler.saveProductCategory(productCategory)
+                        mainViewModel.productCategories = dbHandler.getProductCategories()
+                    }
+                }
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) { updateProductCategory(dataSnapshot) }
+            override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?)  { updateProductCategory(dataSnapshot) }
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
+            override fun onCancelled(p0: DatabaseError) {}
+            override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {}
+        }
+
+        val productGroupsEventListener = object: ChildEventListener {
+
+            fun updateProductGroup(dataSnapshot: DataSnapshot) {
+                dataSnapshot.getValue(ProductGroup::class.java).let {
+                    if (it != null && dataSnapshot.key != null) {
+                        val productGroup = it
+                        productGroup.id = dataSnapshot.key!!.toInt()
+                        dbHandler.saveProductGroup(productGroup)
+                        mainViewModel.productGroups = dbHandler.getProductGroups()
+                    }
+                }
+            }
+
+            override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) { updateProductGroup(dataSnapshot) }
+            override fun onChildChanged(dataSnapshot: DataSnapshot, previousChildName: String?)  { updateProductGroup(dataSnapshot) }
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
+            override fun onCancelled(p0: DatabaseError) {}
+            override fun onChildMoved(dataSnapshot: DataSnapshot, previousChildName: String?) {}
+        }
+        fdb.child("product_groups").addChildEventListener(productGroupsEventListener)
+        fdb.child("product_categories").addChildEventListener(productCategoriesEventListener)
+        fdb.child("products").addChildEventListener(productsEventListener)
     }
 }

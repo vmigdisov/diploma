@@ -6,15 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import studio.mobile_app.chamomile.*
-import studio.mobile_app.chamomile.ui.ProductsFragment
+import studio.mobile_app.chamomile.ui.products.ProductClickListener
+import studio.mobile_app.chamomile.ui.products.ProductFragment
+import studio.mobile_app.chamomile.ui.products.ProductsFragment
 
 
 interface CategoryClickListener {
-    fun onListItemClicked(categoty: Int)
-}
-
-interface ProductClickListener {
-    fun onListItemClicked(product: Product)
+    fun onCategoryClicked(categoty: Int)
 }
 
 class GroupFragment : Fragment(), CategoryClickListener, ProductClickListener {
@@ -33,13 +31,7 @@ class GroupFragment : Fragment(), CategoryClickListener, ProductClickListener {
         return root
     }
 
-    override fun onListItemClicked(categoty: Int) {
-//        fragmentManager?.let { it
-//                .beginTransaction()
-//                .replace(R.id.fragmentContainer, ProductsFragment(categoty, this))
-//                .addToBackStack("CATALOG")
-//                .commit()
-//        }
+    override fun onCategoryClicked(categoty: Int) {
         childFragmentManager
             .beginTransaction()
             .replace(R.id.fragmentContainer, ProductsFragment.newInstance(categoty))
@@ -47,8 +39,12 @@ class GroupFragment : Fragment(), CategoryClickListener, ProductClickListener {
             .commit()
     }
 
-    override fun onListItemClicked(product: Product) {
-        //TODO("Not yet implemented")
+    override fun onProductClicked(product: String) {
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragmentContainer, ProductFragment.newInstance(product))
+            .addToBackStack("CATALOG")
+            .commit()
     }
 
     companion object {

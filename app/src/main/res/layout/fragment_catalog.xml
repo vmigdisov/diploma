@@ -10,24 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/searchText"
+        <SearchView
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:autofillHints="@string/search_placeholder_text"
-            android:background="@color/colorPrimaryDark"
-            android:drawableLeft="@drawable/ic_search"
-            android:drawableTint="#FFFFFF"
-            android:ems="10"
-            android:hint="@string/search_placeholder_text"
-            android:inputType="textPersonName"
-            android:lineSpacingExtra="12sp"
-            android:padding="16dp"
-            android:textColor="@android:color/white"
-            android:textColorHighlight="@color/colorPrimaryDark"
-            android:textColorHint="#FFFFFF"
-            android:textColorLink="@color/colorPrimaryDark"
-            android:textSize="14sp" />
+            android:layout_height="match_parent" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
@@ -42,6 +27,8 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+
+    </androidx.viewpager.widget.ViewPager>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

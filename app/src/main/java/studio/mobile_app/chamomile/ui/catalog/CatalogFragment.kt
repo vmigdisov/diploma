@@ -33,8 +33,7 @@ class CatalogFragment : Fragment() {
     }
 }
 
-class ProductGroupsPagerAdapter(fragmentManager: FragmentManager, productGroups: ArrayList<ProductGroup>): FragmentPagerAdapter(fragmentManager) {
-
+class ProductGroupsPagerAdapter(fragmentManager: FragmentManager, productGroups: ArrayList<ProductGroup>): FragmentPagerAdapter(fragmentManager, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
     var groups = productGroups
 
     override fun getItem(position: Int): Fragment {

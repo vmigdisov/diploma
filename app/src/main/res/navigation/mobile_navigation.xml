@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_basket"
-        android:name="studio.mobile_app.chamomile.ui.BasketFragment"
+        android:name="studio.mobile_app.chamomile.ui.basket.BasketFragment"
         android:label="@string/title_basket"
         tools:layout="@layout/fragment_basket" />
 

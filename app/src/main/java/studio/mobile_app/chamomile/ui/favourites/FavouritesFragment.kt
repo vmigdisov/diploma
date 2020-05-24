@@ -8,24 +8,29 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import studio.mobile_app.chamomile.ProductCategory
 import studio.mobile_app.chamomile.R
+import studio.mobile_app.chamomile.ui.products.ProductClickListener
+import studio.mobile_app.chamomile.ui.products.ProductFragment
+import studio.mobile_app.chamomile.ui.products.ProductsFragment
 
-class FavouritesFragment : Fragment() {
+class FavouritesFragment : Fragment(), ProductClickListener {
 
-    private lateinit var favouritesViewModel: FavouritesViewModel
-
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View? {
-        favouritesViewModel =
-                ViewModelProviders.of(this).get(FavouritesViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_favourites, container, false)
-        val textView: TextView = root.findViewById(R.id.text_favourites)
-        favouritesViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val root = inflater.inflate(R.layout.fragment_container, container, false)
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragmentContainer, ProductsFragment.newInstance(ProductCategory.FAVOURITES))
+            .addToBackStack("CATALOG")
+            .commit()
         return root
+    }
+
+    override fun onProductClicked(product: String) {
+        childFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragmentContainer, ProductFragment.newInstance(product))
+            .addToBackStack("CATALOG")
+            .commit()
     }
 }

@@ -8,4 +8,7 @@
     <string name="title_profile">Профиль</string>
     <string name="hello_blank_fragment">Пустой фрагмент</string>
     <string name="search_placeholder_text">Наименование, бренд или артикул</string>
+    <string name="product_name">Название продукта</string>
+    <string name="product_articul">Артикул</string>
+    <string name="product_price">Цена</string>
 </resources>
