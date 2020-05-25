@@ -23,9 +23,9 @@ class CatalogFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_catalog, container, false)
         activity?.let {
             val mainViewModel = ViewModelProviders.of(it).get(MainViewModel::class.java)
-            val pagerAdapter = fragmentManager?.let { ProductGroupsPagerAdapter(it, mainViewModel.productGroups) }
             val viewPager: ViewPager = root.findViewById(R.id.viewPager)
-            viewPager.adapter = pagerAdapter
+            //viewPager.adapter = fragmentManager?.let { ProductGroupsPagerAdapter(it, mainViewModel.productGroups) }
+            viewPager.adapter = ProductGroupsPagerAdapter(childFragmentManager, mainViewModel.productGroups)
             val tabs: TabLayout = root.findViewById(R.id.tabs)
             tabs.setupWithViewPager(viewPager)
         }

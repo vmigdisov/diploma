@@ -13,7 +13,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import kotlinx.android.synthetic.main.fragment_profile.*
 import studio.mobile_app.chamomile.ui.catalog.ProductGroupsPagerAdapter
+import studio.mobile_app.chamomile.ui.products.ProductFragment
+import studio.mobile_app.chamomile.ui.products.ProductsFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,9 +24,16 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.let { fm ->
             for (fragment in fm.fragments) {
                 for (fr in fragment.childFragmentManager.fragments) {
-                    if (fr.isVisible && !fr.childFragmentManager.fragments.isEmpty()) {
-                        fr.childFragmentManager.popBackStack()
-                        return
+                    for (subfr in fr.childFragmentManager.fragments) {
+                        if (subfr.isVisible && !subfr.childFragmentManager.fragments.isEmpty()) {
+                            for (frag in subfr.childFragmentManager.fragments) {
+                                if (frag is ProductFragment || frag is ProductsFragment) {
+                                    subfr.childFragmentManager.popBackStack()
+                                    return
+                                }
+                            }
+
+                        }
                     }
                 }
             }
